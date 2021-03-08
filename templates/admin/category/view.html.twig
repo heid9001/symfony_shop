@@ -1,0 +1,17 @@
+{% extends 'admin/base.html.twig' %}
+{% import 'macro/admin.html.twig' as admin %}
+
+{% block body %}
+    {{ admin.table({
+        'title': 'Менеджер категорий',
+        'deleteRoute': 'admin_category_delete',
+        'updateRoute': 'admin_category_create',
+        'listUrl': '/admin/category/list',
+        'deleteAllRoute': '/admin/category/deleteAll',
+        'headers': [
+            {'name': 'id', 'label': '#', 'sortable': true},
+            {'name': 'name', 'label': 'Имя', 'sortable': true},
+            {'name': 'linkToProducts', 'label': 'Товары', 'sortable': false}
+        ]
+    }, data, pages) }}
+{% endblock %}

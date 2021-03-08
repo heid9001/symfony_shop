@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Менеджер категорий</h2>
+
+    {% if category is defined %}
+        <div class="row">
+            <h2>Category: {{ category.name }}</h2>
+            {% if category.parent is not none %}
+                <p>Parent: {{ category.parent.name }}</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="row">
+            <table class="table">
+                <thead>
+                <th></th>
+                <th id="id"   class="sortable">Ключ</th>
+                <th id="pid"  class="sortable">Дочерняя</th>
+                <th id="name" class="sortable">Имя</th>
+                <th>Продукты</th>
+                <th>*</th>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td><input type="checkbox" value="{{ category.id }}" /></td>
+                        <td>{{ category.id }}</td>
+                        {% if category.parent is not none %}
+                            <td>
+                                <a href="{{ path('category_view', {'id': category.parent.id}) }}">{{ category.parent.name }}</a>
+                            </td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                        <td>{{ category.name }}</td>
+                        <td>
+                            перейти: <a href="{{ path("product_viewList", {"cid": category.id}) }}">({{ category.productCount }})</a>
+                        </td>
+                        <td>
+                            <div>
+                                <a href="{{ url('category_delete', {"id": category.id}) }}">удалить</a>
+                            </div>
+                            <div>
+                                <a href="{{ url('category_create', {"id": category.id}) }}">обновить</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div style="float: right">
+                <button id="deleteAll" type="button" class="btn btn-danger">Удалить</button>
+            </div>
+
+        </div>
+        <div class="row">
+            <ul class="pagination">
+                {% for page in pagination %}
+                    <li><a href="{{ page.url }}">{{ page.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+   {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+
+            var deleteQuery = {};
+            var orderQuery = {};
+
+            if ((p = $.urlParam('col')) !== 0) {
+                orderQuery['col'] = p;
+            }
+            if ((p = $.urlParam('order')) !== 0) {
+                orderQuery['order'] = p;
+            }
+
+            $('input[type="checkbox"]').click(function(){
+                if ($(this).is(':checked'))
+                {
+                    if (! ('ids' in deleteQuery)) {
+                        deleteQuery['ids'] = {}
+                    }
+                    deleteQuery['ids'][$(this).val()] = true;
+                } else {
+                    delete deleteQuery['ids'][$(this).val()];
+                }
+            });
+
+            $('#deleteAll').click(function(){
+                sendDelete();
+            });
+
+            $('.sortable').click(function(){
+                let col = $(this).attr('id');
+                if (! ('col' in orderQuery)) {
+                    orderQuery['col'] = col;
+                }
+                if (col !== orderQuery['col']) {
+                    orderQuery['col'] = col;
+                }
+                if (! ('order' in orderQuery))
+                {
+                    orderQuery['order'] = 'ASC';
+                } else {
+                    orderQuery['order'] = orderQuery['order'] === 'ASC' ? 'DESC' : 'ASC';
+                }
+                sendOrder();
+            });
+
+            function sendOrder()
+            {
+                let url = '/category/list?' + $.param(orderQuery);
+                console.log(orderQuery);
+                location.href = url;
+            }
+
+            function sendDelete()
+            {
+                deleteQuery['ids'] = Object.keys(deleteQuery['ids']).join(',');
+                console.log(deleteQuery);
+                $.get("/category/deleteAll", deleteQuery, function(data, status){
+                    console.log(data, status);
+                    location.reload();
+                });
+            }
+        })
+    </script>
+{% endblock %}

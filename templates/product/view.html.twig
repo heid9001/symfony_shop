@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Менеджер товаров</h2>
+
+    {% if product is defined %}
+        <div class="row">
+            <h2>Категория: {{ product.category.name }}</h2>
+            <h2>Имя: {{ product.name }}</h2>
+        </div>
+    {% else %}
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <th></th>
+                    <th class="sortable" id="id">#</th>
+                    <th class="sortable" id="cid">Категория</th>
+                    <th class="sortable" id="name">Имя</th>
+                    <th>*</th>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td><input type="checkbox" value="{{ product.id }}"/></td>
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.category.name }}</td>
+                            <td>{{ product.name }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div style="float: right">
+                <button id="deleteAll" type="button" class="btn btn-danger">Удалить</button>
+            </div>
+
+        </div>
+        <div class="row">
+            <ul class="pagination">
+                {% for page in pagination %}
+                    <li><a href="{{ page.url }}">{{ page.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+            var deleteQuery = {};
+            var orderQuery = {};
+
+            if ((p = $.urlParam('col')) !== 0) {
+                orderQuery['col'] = p;
+            }
+            if ((p = $.urlParam('order')) !== 0) {
+                orderQuery['order'] = p;
+            }
+
+            $('input[type="checkbox"]').click(function(){
+                if ($(this).is(':checked'))
+                {
+                    if (! ('ids' in deleteQuery)) {
+                        deleteQuery['ids'] = {}
+                    }
+                    deleteQuery['ids'][$(this).val()] = true;
+                } else {
+                    delete deleteQuery['ids'][$(this).val()];
+                }
+            });
+
+            $('#deleteAll').click(function(){
+                sendDelete();
+            });
+
+            $('.sortable').click(function(){
+                let col = $(this).attr('id');
+                if (! ('col' in orderQuery)) {
+                    orderQuery['col'] = col;
+                }
+                if (col !== orderQuery['col']) {
+                    orderQuery['col'] = col;
+                }
+                if (! ('order' in orderQuery))
+                {
+                    orderQuery['order'] = 'ASC';
+                } else {
+                    orderQuery['order'] = orderQuery['order'] === 'ASC' ? 'DESC' : 'ASC';
+                }
+                sendOrder();
+            });
+
+            function sendOrder()
+            {
+                location.href = '/product/list?' + $.param(orderQuery);
+            }
+
+            function sendDelete()
+            {
+                deleteQuery['ids'] = Object.keys(deleteQuery['ids']).join(",");
+                $.get("/product/deleteAll", deleteQuery, function(data, status){
+                    console.log(data, status);
+                    location.reload();
+                });
+            }
+        })
+    </script>
+{% endblock %}

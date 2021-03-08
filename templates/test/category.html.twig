@@ -1,0 +1,12 @@
+{% extends 'test/base.html.twig' %}
+
+{% block content %}
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {% for product in form.products %}
+            <div>
+                {{ form_row(product.name) }}
+            </div>
+        {% endfor %}
+    {{ form_end(form) }}
+{% endblock %}

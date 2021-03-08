@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% import 'macro/tables.html.twig' as tables %}
+
+{% block body %}
+    {{ tables.crud({
+        'title': 'Менеджер категорий',
+        'deleteRoute': 'category_delete',
+        'updateRoute': 'category_create'
+    },headers, data, pages) }}
+{% endblock %}

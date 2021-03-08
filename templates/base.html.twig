@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+            <style>
+                .vertical-menu {
+                    width: 200px; /* Set a width if you like */
+                }
+
+                .vertical-menu a {
+                    background-color: #eee; /* Grey background color */
+                    color: black; /* Black text color */
+                    display: block; /* Make the links appear below each other */
+                    padding: 12px; /* Add some padding */
+                    text-decoration: none; /* Remove underline from links */
+                }
+
+                .vertical-menu a:hover {
+                    background-color: #ccc; /* Dark grey background on mouse-over */
+                }
+
+                .vertical-menu a.active {
+                    background-color: #4CAF50; /* Add a green color to the "active/current" link */
+                    color: white;
+                }
+            </style>
+        {% endblock %}
+        <script>
+            $.urlParam = function(name){
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results === null) return 0;
+                return results[1] || 0;
+            };
+        </script>
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="vertical-menu">
+                        <div>
+                            <h4>Товары</h4>
+                            <div class="vertical-menu">
+                                <a href="{{ path('product_viewList') }}">Список</a>
+                                <a href="{{ path('product_create') }}">Добавить</a>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>Категории</h4>
+                            <div class="vertical-menu">
+                                <a href="{{ path('admin_category_viewList') }}">Список</a>
+                                <a href="{{ path('admin_category_create') }}">Добавить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
